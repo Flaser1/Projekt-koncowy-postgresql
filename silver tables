@@ -1,0 +1,54 @@
+create table if not exists silver.customers_clean as 
+	select
+		customer_id,
+		initcap(trim(customer_name)) as customer_name,
+		lower(trim(email)) as email,
+		upper(c.country) as country,
+		signup_date,
+		lower(trim(acquisition_channel)) as acquisition_channel
+	from bronze.customers;
+
+create table if not exists silver.products_clean as 
+	select
+		product_id,
+		trim(product_name) as product_name,
+		lower(category) as category,
+		base_price
+	from bronze.products;
+
+create table if not exists silver.orders_enriched as 
+	select 
+		o.order_id,
+		o.customer_id,
+		cast(o.order_timestamp as date) as order_date,
+		date_trunc('month', o.order_timestamp) as order_month,
+		lower(trim(o.status)) as order_status,
+		upper(o.currency) as currency,
+		lower(trim(o.sales_channel)) as sales_channel,
+		lower(trim(p.payment_status)) as payment_status,
+		lower(trim(p.payment_method)) as payment_method,
+		cast(lower(trim(p.payment_status)) = 'paid' as boolean) as is_paid,
+		first_value(cast(o.order_timestamp as date)) over (
+			partition by o.customer_id
+			order by cast(o.order_timestamp as date)
+		) as first_order_date
+	from bronze.orders o
+	join bronze.payments p
+	on o.order_id = p.order_id;
+
+create table if not exists silver.order_items_enriched as 
+	select
+		oi.order_item_id,
+		oi.order_id,
+		p.product_id,
+		product_name,
+		lower(trim(p.category)) as category,
+		oi.quantity,
+		oi.unit_price,
+		oi.discount_percent,
+		oi.quantity * oi.unit_price as gross_value,
+		oi.quantity * oi.unit_price * discount_percent / 100 as discount_value,
+		oi.quantity * oi.unit_price * (1 - discount_percent / 100) as net_value
+	from bronze.order_items oi
+	join bronze.products p
+	on oi.product_id = p.product_id;
