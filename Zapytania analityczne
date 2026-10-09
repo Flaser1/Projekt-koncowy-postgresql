@@ -1,0 +1,36 @@
+select 
+	dss.sales_date,
+	dss.country,
+	sum(dss.net_revenue) as total_net_revenue
+from gold.daily_sales_summary dss 
+where dss.net_revenue is not null
+group by sales_date, country
+order by country, total_net_revenue desc; 
+
+select
+	*
+from gold.customer_analytics ca
+limit 5;
+
+select 
+	* 
+from gold.product_performance_monthly ppm
+where ppm.category_rank_by_revenue <= 3;
+
+select
+	ppm.sales_month,
+	sum(ppm.net_revenue) as total_net_revenue
+from gold.product_performance_monthly ppm 
+group by ppm.sales_month
+order by total_net_revenue desc;
+
+
+select 
+	sum(gross_revenue) as total_gross_revenue,
+	sum(discount_value) as total_discounts_amount,
+	round(sum(discount_value) / sum(gross_revenue) * 100, 2) as discount_share_of_gross_sales
+from gold.daily_sales_summary dss;
+
+select 
+	sum(paid_orders_count) as paid_orders
+from gold.daily_sales_summary dss;
