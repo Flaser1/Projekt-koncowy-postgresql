@@ -1,0 +1,24 @@
+create table if not exists bronze.customers as
+	select 
+	*
+	from raw.customers;
+
+create table if not exists bronze.products as
+	select 
+		*
+	from raw.products;
+
+create table if not exists bronze.orders as
+	select
+		*
+	from raw.orders;
+
+create table if not exists bronze.order_items as
+	select
+		*
+	from raw.order_items;
+
+create table if not exists bronze.payments as
+	select
+		*
+	from raw.payments;
