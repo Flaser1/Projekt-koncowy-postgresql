@@ -1,0 +1,17 @@
+create index if not exists idx_product_performence_monthly_sales_month_net_revenue
+on gold.product_performance_monthly(sales_month, net_revenue);
+
+create index if not exists idx_product_performance_monthly_month_category_net_revenue
+on gold.product_performance_monthly(sales_month, category, net_revenue);
+
+create index if not exists idx_daily_sales_summary_date_net_revenue
+on gold.daily_sales_summary(sales_date, net_revenue);
+
+create index if not exists idx_daily_sales_summary_date_country_net_revenue
+on gold.daily_sales_summary(sales_date, country, net_revenue);
+
+create index if not exists idx_daily_sales_summary_date_channel_net_revenue
+on gold.daily_sales_summary(sales_date, sales_channel, net_revenue)
+
+create index if not exists idx_customer_analytics_revenue
+on gold.customer_analytics(total_net_revenue);
